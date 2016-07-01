@@ -33,9 +33,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     public Song remove(int index) {
         return mSongs.remove(index);
     }
-    public SongsAdapter(ArrayList<Song>songs){
+
+    public SongsAdapter(ArrayList<Song> songs) {
         this.mSongs = songs;
     }
+
     // Create new views (invoked by the layout manager)
     @Override
     public SongsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
@@ -53,7 +55,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-
 
 
         holder.title.setText(mSongs.get(position).getTitle());
@@ -90,7 +91,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             mView = v;
             description = (TextView) v.findViewById(R.id.desc);
             title = (TextView) v.findViewById(R.id.title);
-            image = (ImageView)v.findViewById(R.id.image);
+            image = (ImageView) v.findViewById(R.id.image);
         }
     }
 }
