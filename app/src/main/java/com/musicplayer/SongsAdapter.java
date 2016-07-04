@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -60,6 +62,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         holder.title.setText(mSongs.get(position).getTitle());
         holder.description.setText(mSongs.get(position).getDesc());
         holder.image.setImageResource(mSongs.get(position).getImage());
+        holder.duration.setText(mSongs.get(position).getDuration());
+
 
     }
 
@@ -84,6 +88,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         TextView description;
         TextView title;
         ImageView image;
+        TextView duration;
 
 
         public ViewHolder(View v) {
@@ -92,6 +97,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             description = (TextView) v.findViewById(R.id.desc);
             title = (TextView) v.findViewById(R.id.title);
             image = (ImageView) v.findViewById(R.id.image);
+            duration = (TextView) v.findViewById(R.id.duration);
         }
     }
 }
