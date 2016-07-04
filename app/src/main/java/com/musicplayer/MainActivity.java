@@ -14,7 +14,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.database.sqlite.SQLiteQuery;
 import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends Activity {
@@ -85,7 +87,7 @@ public class MainActivity extends Activity {
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 int thisalbumId = musicCursor.getInt(albumId);
-                String thisDuration = musicCursor.getString(duration);
+                String thisDuration = getDuration(Integer.parseInt(musicCursor.getString(duration)));
                 mAdapter.add(new Song(thisTitle, thisArtist,thisDuration, R.drawable.song));
 
             }
@@ -93,7 +95,16 @@ public class MainActivity extends Activity {
 
         }musicCursor.close();
     }
-
+private static String getDuration(long milis){
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(milis);
+    milis -= TimeUnit.MINUTES.toMillis(minutes);
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(milis);
+    StringBuilder sb = new StringBuilder(6);
+    sb.append(minutes<10? "0"+minutes : minutes);
+    sb.append(":");
+    sb.append(seconds <10? "0"+seconds:seconds);
+    return sb.toString();
+}
 
 }
 
