@@ -6,14 +6,17 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Audio;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.database.sqlite.SQLiteQuery;
 import android.text.TextUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -74,27 +77,39 @@ public class MainActivity extends Activity {
     public void getSongList() {
         //retrieve song info
         ContentResolver musicResolver = getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        Uri musicUri = Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = new String[]{Audio.Media.ALBUM_ID, Audio.Media.TITLE, Audio.Media.ARTIST,Audio.Media.DURATION};
+        Cursor musicCursor = musicResolver.query(musicUri, projection, null, null, null);
+        Uri albumsUri = Audio.Albums.EXTERNAL_CONTENT_URI;
+        String[] albumPojection = new String[]{Audio.Albums.ALBUM_ART};
+
         //iterate over results if valid
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
-            int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
-            int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
-            int albumId = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM_ID);
-            int duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int albumkey = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_KEY);
+            int titleColumn = musicCursor.getColumnIndex(Audio.Media.TITLE);
+            int artistColumn = musicCursor.getColumnIndex(Audio.Media.ARTIST);
+            int albumId = musicCursor.getColumnIndex(Audio.Media.ALBUM_ID);
+            int duration = musicCursor.getColumnIndex(Audio.Media.DURATION);
+
+
             //add songs to list
             do {
+                String albumArt = null;
+                Cursor albumCursor = musicResolver.query(albumsUri, albumPojection, null, null, null);
+//                Audio.Albums.ALBUM_ID +"=?"
+                if (albumCursor != null && albumCursor.moveToFirst()) {
+                    int albumArtKey = albumCursor.getColumnIndex(Audio.Albums.ALBUM_ART);
+                    albumArt = albumCursor.getString(albumArtKey);
+//                    if(albumArt == null){
+//                        albumArt=
+//                    }
+                }
+
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                int thisalbumId = musicCursor.getInt(albumId);
                 String thisDuration = getDuration(Integer.parseInt(musicCursor.getString(duration)));
-                mAdapter.add(new Song(thisTitle, thisArtist, thisDuration, R.drawable.song));
-
+                mAdapter.add(new Song(thisTitle, thisArtist, thisDuration,albumArt));
+                albumCursor.moveToNext();
             }
             while (musicCursor.moveToNext());
 

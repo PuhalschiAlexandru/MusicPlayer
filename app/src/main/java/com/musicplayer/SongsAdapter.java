@@ -1,5 +1,6 @@
 package com.musicplayer;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,7 +62,9 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
 
         holder.title.setText(mSongs.get(position).getTitle());
         holder.description.setText(mSongs.get(position).getDesc());
-        holder.image.setImageResource(mSongs.get(position).getImage());
+        Uri imageUri = Uri.parse(mSongs.get(position).getImage());
+        holder.image.setImageURI(imageUri);
+//        holder.image.setImageResource(mSongs.get(position).getImage());
         holder.duration.setText(mSongs.get(position).getDuration());
 
 

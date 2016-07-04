@@ -1,5 +1,7 @@
 package com.musicplayer;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +10,10 @@ public class Song {
     String title;
     String desc;
     String duration;
-    int image;
+    String image;
 
 
-    public Song(String title, String desc,String duration, int image) {
+    public Song(String title, String desc,String duration, String image) {
         this.title = title;
         this.desc = desc;
         this.duration = duration;
@@ -30,7 +32,7 @@ public class Song {
         return duration;
     }
 
-    public int getImage() {
+    public String getImage() {
         return image;
     }
 }
