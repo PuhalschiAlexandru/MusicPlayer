@@ -8,33 +8,35 @@
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:padding="3dp"
-        android:layout_alignParentLeft="true" />
+        android:padding="3dp" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginRight="30dp"
         android:layout_toEndOf="@+id/image"
         android:layout_toRightOf="@+id/image"
-        android:lines="1"
+        android:ellipsize="marquee"
         android:padding="3dp"
+        android:singleLine="true"
         android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginRight="30dp"
-        />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"
+        android:layout_marginRight="65dp"
         android:layout_toEndOf="@+id/image"
         android:layout_toRightOf="@+id/image"
-        android:lines="1"
+        android:ellipsize="marquee"
         android:padding="3dp"
+        android:singleLine="true"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -52,10 +54,10 @@
         android:id="@+id/duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_alignTop="@+id/desc"
         android:layout_toLeftOf="@+id/Play"
-        android:layout_toStartOf="@+id/Play" />
+        android:layout_toStartOf="@+id/Play"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>
