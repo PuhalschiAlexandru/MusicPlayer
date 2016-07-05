@@ -1,9 +1,6 @@
 package com.musicplayer;
 
-import android.graphics.Bitmap;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.net.Uri;
 
 
 public class Song {
@@ -11,13 +8,17 @@ public class Song {
     String desc;
     String duration;
     String image;
+    Uri imageUri;
 
 
-    public Song(String title, String desc,String duration, String image) {
+    public Song(String title, String desc, String duration, String image) {
         this.title = title;
         this.desc = desc;
         this.duration = duration;
         this.image = image;
+        if (image != null) {
+            imageUri = Uri.parse(image);
+        }
     }
 
 
@@ -28,6 +29,7 @@ public class Song {
     public String getDesc() {
         return desc;
     }
+
     public String getDuration() {
         return duration;
     }

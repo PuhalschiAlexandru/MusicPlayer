@@ -2,6 +2,7 @@ package com.musicplayer;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends Activity {
-    //        implements android.app.LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOAD_SONGS_ID = 1;
-    private static final String NULL_EXCEPTION = "*";
     private RecyclerView mRecyclerView;
     private SongsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -41,24 +40,24 @@ public class MainActivity extends Activity {
         getSongList();
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-//        getLoaderManager().initLoader(LOAD_SONGS_ID, null, this);
+        getLoaderManager().initLoader(LOAD_SONGS_ID, null, this);
     }
 
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-//        return null;
-//    }
-//
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<Cursor> loader) {
-//
-//    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return null;
+    }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+//
 
     public void getSongList() {
         //retrieve song info
@@ -81,18 +80,13 @@ public class MainActivity extends Activity {
             //add songs to list
             do {
                 String albumArtId = null;
-//                Audio.Albums.ALBUM_ID +"=?"
                 String albumId = musicCursor.getString(albumColumn);
                 String[] albumSelectionArgs = new String[]{albumId};
                 Cursor albumCursor = musicResolver.query(albumsUri, albumPojection,
                         Audio.Albums._ID + "=?", albumSelectionArgs, null);
                 int albumArt = albumCursor.getColumnIndex(Audio.Albums.ALBUM_ART);
                 if (albumCursor != null && albumCursor.moveToFirst()) {
-//                    albumCursor.moveToNext();
                     albumArtId = albumCursor.getString(albumArt);
-//                    if (albumArtId == null){
-//                        albumArtId = NULL_EXCEPTION;
-//                    }
                 }
 
                 String titleId = musicCursor.getString(titleColumn);

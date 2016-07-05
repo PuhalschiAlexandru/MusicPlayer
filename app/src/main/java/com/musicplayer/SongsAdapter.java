@@ -1,6 +1,5 @@
 package com.musicplayer;
 
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,26 +56,14 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-
-
         holder.title.setText(mSongs.get(position).getTitle());
         holder.description.setText(mSongs.get(position).getDesc());
-
-        if(mSongs.get(position).getImage()==null){
+        if (mSongs.get(position).getImage() == null) {
             holder.image.setImageResource(R.drawable.song);
-       }else{
-            Uri imageUri = Uri.parse(mSongs.get(position).getImage());
-
-        holder.image.setImageURI(imageUri);}
-//        holder.image.setImageResource(mSongs.get(position).getImage());
+        } else {
+            holder.image.setImageURI(mSongs.get(position).imageUri);
+        }
         holder.duration.setText(mSongs.get(position).getDuration());
-
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -97,7 +83,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         TextView title;
         ImageView image;
         TextView duration;
-
 
         public ViewHolder(View v) {
             super(v);
