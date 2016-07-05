@@ -2,6 +2,7 @@ package com.musicplayer;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,9 +16,12 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOAD_SONGS_ID = 1;
+    private static final int LOAD_ALBUM_ID = 2;
     private RecyclerView mRecyclerView;
     private SongsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private String[] mAlbumSelectionArgs;
+    private String mAlbumArtId,mTitleId,mAristId,mDurationId,mAlbumId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +48,70 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return null;
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+        switch (id) {
+            case LOAD_SONGS_ID:
+                Uri musicUri = Audio.Media.EXTERNAL_CONTENT_URI;
+                String[] projection = new String[]{Audio.Media.ALBUM_ID, Audio.Media.TITLE,
+                        Audio.Media.ARTIST, Audio.Media.DURATION};
+                return new CursorLoader(this, musicUri, projection, null, null, null);
+
+            case LOAD_ALBUM_ID:
+                Uri albumsUri = Audio.Albums.EXTERNAL_CONTENT_URI;
+                String[] albumPojection = new String[]{Audio.Albums.ALBUM_ART};
+                return new CursorLoader(this, albumsUri, albumPojection, Audio.Albums._ID + "=?",
+                        mAlbumSelectionArgs, null);
+
+            default:
+                return null;
+
+
+        }
+
+
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case LOAD_SONGS_ID:
+                if (cursor != null && cursor.moveToFirst()) {
+                    int titleColumn = cursor.getColumnIndex(Audio.Media.TITLE);
+                    int artistColumn = cursor.getColumnIndex(Audio.Media.ARTIST);
+                    int albumColumn = cursor.getColumnIndex(Audio.Media.ALBUM_ID);
+                    int duration = cursor.getColumnIndex(Audio.Media.DURATION);
+                    do {
+                        mTitleId = cursor.getString(titleColumn);
+                        mAristId = cursor.getString(artistColumn);
+                        mDurationId = getDuration(Integer.parseInt(cursor.getString(duration)));
+                        mAlbumId = cursor.getString(albumColumn);
+                        mAlbumSelectionArgs = new String[]{mAlbumId};
+                    }
+                    while (cursor.moveToNext());
+
+                }
+//                cursor.close();
+                getLoaderManager().initLoader(LOAD_ALBUM_ID, null, this);
+                break;
+            case LOAD_ALBUM_ID:
+                int albumArt = cursor.getColumnIndex(Audio.Albums.ALBUM_ART);
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        mAlbumArtId = cursor.getString(albumArt);
+                    }
+                    while (cursor.moveToNext());
+                }
+                break;
+        }
+            for(int i=0;i < cursor.getColumnCount();i++){
+                mAdapter.add(new Song(mTitleId, mAristId, mDurationId, mAlbumArtId));
+
+
+            }
+//            mAdapter.add(new Song(titleId, artistId, durationId, albumArtId));
+
+
+
 
     }
 
@@ -61,44 +123,13 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
     public void getSongList() {
         //retrieve song info
-        ContentResolver musicResolver = getContentResolver();
-        Uri musicUri = Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = new String[]{Audio.Media.ALBUM_ID, Audio.Media.TITLE,
-                Audio.Media.ARTIST, Audio.Media.DURATION};
-        Cursor musicCursor = musicResolver.query(musicUri, projection, null, null, null);
-        Uri albumsUri = Audio.Albums.EXTERNAL_CONTENT_URI;
-        String[] albumPojection = new String[]{Audio.Albums.ALBUM_ART};
+        //ContentResolver musicResolver = getContentResolver();
+
 
         //iterate over results if valid
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            //get columns
-            int titleColumn = musicCursor.getColumnIndex(Audio.Media.TITLE);
-            int artistColumn = musicCursor.getColumnIndex(Audio.Media.ARTIST);
-            int albumColumn = musicCursor.getColumnIndex(Audio.Media.ALBUM_ID);
-            int duration = musicCursor.getColumnIndex(Audio.Media.DURATION);
 
-            //add songs to list
-            do {
-                String albumArtId = null;
-                String albumId = musicCursor.getString(albumColumn);
-                String[] albumSelectionArgs = new String[]{albumId};
-                Cursor albumCursor = musicResolver.query(albumsUri, albumPojection,
-                        Audio.Albums._ID + "=?", albumSelectionArgs, null);
-                int albumArt = albumCursor.getColumnIndex(Audio.Albums.ALBUM_ART);
-                if (albumCursor != null && albumCursor.moveToFirst()) {
-                    albumArtId = albumCursor.getString(albumArt);
-                }
+        //add songs to list
 
-                String titleId = musicCursor.getString(titleColumn);
-                String artistId = musicCursor.getString(artistColumn);
-                String durationId = getDuration(Integer.parseInt(musicCursor.getString(duration)));
-                mAdapter.add(new Song(titleId, artistId, durationId, albumArtId));
-
-            }
-            while (musicCursor.moveToNext());
-
-        }
-        musicCursor.close();
     }
 
     private static String getDuration(long milis) {
