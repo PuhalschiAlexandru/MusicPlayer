@@ -62,8 +62,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
 
         holder.title.setText(mSongs.get(position).getTitle());
         holder.description.setText(mSongs.get(position).getDesc());
-        Uri imageUri = Uri.parse(mSongs.get(position).getImage());
-        holder.image.setImageURI(imageUri);
+
+        if(mSongs.get(position).getImage()==null){
+            holder.image.setImageResource(R.drawable.song);
+       }else{
+            Uri imageUri = Uri.parse(mSongs.get(position).getImage());
+
+        holder.image.setImageURI(imageUri);}
 //        holder.image.setImageResource(mSongs.get(position).getImage());
         holder.duration.setText(mSongs.get(position).getDuration());
 
