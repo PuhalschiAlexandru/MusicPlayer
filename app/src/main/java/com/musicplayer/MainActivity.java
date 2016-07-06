@@ -42,6 +42,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
         getLoaderManager().initLoader(LOAD_SONGS_ID, null, this);
         getLoaderManager().initLoader(LOAD_ALBUM_ID, null, this);
+
         mSongs = new ArrayList<>();
         mAlbumUris = new HashMap<>();
     }
@@ -52,7 +53,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             case LOAD_SONGS_ID:
                 Uri musicUri = Audio.Media.EXTERNAL_CONTENT_URI;
                 String[] projection = new String[]{Audio.Media.ALBUM_ID, Audio.Media.TITLE,
-                        Audio.Media.ARTIST, Audio.Media.DURATION};
+                        Audio.Media.ARTIST, Audio.Media.DURATION, Audio.Media.DATA};
                 return new CursorLoader(this, musicUri, projection, null, null, null);
             case LOAD_ALBUM_ID:
                 Uri albumsUri = Audio.Albums.EXTERNAL_CONTENT_URI;
@@ -72,12 +73,14 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
                     int artistColumn = cursor.getColumnIndex(Audio.Media.ARTIST);
                     int albumColumn = cursor.getColumnIndex(Audio.Media.ALBUM_ID);
                     int duration = cursor.getColumnIndex(Audio.Media.DURATION);
+                    int dataColumn = cursor.getColumnIndex(Audio.Media.DATA);
                     do {
                         String mTitleId = cursor.getString(titleColumn);
                         String mAristId = cursor.getString(artistColumn);
                         String mDurationId = getDuration(Integer.parseInt(cursor.getString(duration)));
                         String mAlbumMediaId = cursor.getString(albumColumn);
-                        mSongs.add(new NewSong(mAlbumMediaId, mTitleId, mAristId, mDurationId));
+                        String mSongData = cursor.getString(dataColumn);
+                        mSongs.add(new NewSong(mAlbumMediaId, mTitleId, mAristId, mDurationId,mSongData));
                     }
                     while (cursor.moveToNext());
                 }
@@ -100,9 +103,9 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             while (iterator.hasNext()) {
                 NewSong val = iterator.next();
                 if (mAlbumUris.containsKey(val.AlbumId)) {
-                    mAdapter.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId)));
+                    mAdapter.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId),val.songData));
                 } else {
-                    mAdapter.add(new Song(val.title, val.desc, val.duration, null));
+                    mAdapter.add(new Song(val.title, val.desc, val.duration, null, val.songData));
                 }
             }
         }

@@ -9,9 +9,10 @@ public class Song {
     String duration;
     String image;
     Uri imageUri;
+    String songData;
 
 
-    public Song(String title, String desc, String duration, String image) {
+    public Song(String title, String desc, String duration, String image, String songData) {
         this.title = title;
         this.desc = desc;
         this.duration = duration;
@@ -19,6 +20,7 @@ public class Song {
         if (image != null) {
             imageUri = Uri.parse(image);
         }
+        this.songData = songData;
     }
 
 
@@ -36,6 +38,10 @@ public class Song {
 
     public String getImage() {
         return image;
+    }
+
+    public String getData() {
+        return songData;
     }
 }
 
