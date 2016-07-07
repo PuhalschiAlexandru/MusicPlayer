@@ -41,22 +41,27 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ImageButton
-        android:id="@+id/Play"
+        android:id="@+id/mPlayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
         android:background="@null"
-        android:src="@drawable/play" />
+        android:clickable="true"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:src="@drawable/play42x42" />
 
     <TextView
         android:id="@+id/duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/desc"
-        android:layout_toLeftOf="@+id/Play"
-        android:layout_toStartOf="@+id/Play"
+        android:layout_toLeftOf="@+id/mPlayButton"
+        android:layout_toStartOf="@+id/mPlayButton"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

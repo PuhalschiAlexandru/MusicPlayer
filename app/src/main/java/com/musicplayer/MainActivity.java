@@ -1,11 +1,15 @@
 package com.musicplayer;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore.Audio;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor>, SongsAdapter.SongPlayedListener {
     private static final int LOAD_SONGS_ID = 0;
     private static final int LOAD_ALBUM_ID = 1;
     private RecyclerView mRecyclerView;
@@ -26,6 +30,24 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     private RecyclerView.LayoutManager mLayoutManager;
     private List<NewSong> mSongs;
     private Map<String, String> mAlbumUris;
+    PlayService mService;
+    boolean mBound;
+
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mBound = true;
+            PlayService.LocalBinder binder = (PlayService.LocalBinder) service;
+            mService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBound = false;
+//            mService = null;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +58,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new SongsAdapter();
+        mAdapter = new SongsAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
@@ -80,7 +102,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
                         String mDurationId = getDuration(Integer.parseInt(cursor.getString(duration)));
                         String mAlbumMediaId = cursor.getString(albumColumn);
                         String mSongData = cursor.getString(dataColumn);
-                        mSongs.add(new NewSong(mAlbumMediaId, mTitleId, mAristId, mDurationId,mSongData));
+                        mSongs.add(new NewSong(mAlbumMediaId, mTitleId, mAristId, mDurationId, mSongData));
                     }
                     while (cursor.moveToNext());
                 }
@@ -103,7 +125,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             while (iterator.hasNext()) {
                 NewSong val = iterator.next();
                 if (mAlbumUris.containsKey(val.AlbumId)) {
-                    mAdapter.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId),val.songData));
+                    mAdapter.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId), val.songData));
                 } else {
                     mAdapter.add(new Song(val.title, val.desc, val.duration, null, val.songData));
                 }
@@ -125,6 +147,30 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         sb.append(":");
         sb.append(seconds < 10 ? "0" + seconds : seconds);
         return sb.toString();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent i = new Intent(this, PlayService.class);
+        bindService(i, mConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
+    public void onPlayClicked(String songUri) {
+        // songUri trebuie trimis in service
+        mService.playMusic(songUri);
+    }
+
+    @Override
+    public void onPauseClicked() {
+        mService.stopMusic();
     }
 }
 
