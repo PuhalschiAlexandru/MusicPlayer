@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBound = false;
-//            mService = null;
         }
     };
 
@@ -164,7 +163,6 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
     @Override
     public void onPlayClicked(String songUri) {
-        // songUri trebuie trimis in service
         mService.playMusic(songUri);
     }
 

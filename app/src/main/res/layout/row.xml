@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="30dp"
+        android:layout_marginRight="50dp"
         android:layout_toEndOf="@+id/image"
         android:layout_toRightOf="@+id/image"
         android:ellipsize="marquee"
@@ -31,8 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"
-        android:layout_marginRight="65dp"
-        android:layout_toEndOf="@+id/image"
+        android:layout_marginRight="95dp"
         android:layout_toRightOf="@+id/image"
         android:ellipsize="marquee"
         android:padding="3dp"
@@ -40,28 +39,43 @@
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <ImageButton
-        android:id="@+id/mPlayButton"
+    <RelativeLayout
+        android:id="@+id/play_pause_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
-        android:background="@null"
-        android:clickable="true"
         android:paddingBottom="5dp"
-        android:paddingLeft="5dp"
-        android:src="@drawable/play42x42" />
+        android:paddingLeft="5dp">
+
+        <ImageButton
+            android:id="@+id/play_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/play42x42" />
+
+        <ImageButton
+            android:id="@+id/pause_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/pause42x42"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/desc"
-        android:layout_toLeftOf="@+id/mPlayButton"
-        android:layout_toStartOf="@+id/mPlayButton"
+        android:layout_toLeftOf="@+id/play_pause_layout"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

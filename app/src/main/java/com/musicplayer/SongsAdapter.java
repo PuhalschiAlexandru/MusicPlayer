@@ -17,10 +17,9 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
 
     private SongPlayedListener mSongPlayedListener;
 
-    private int mLastSelectedItemPos = -1;
-    private int mSelectedItemPos = -1;
+    private int mLastPlayingPos = -1;
+    private int mNowPlayingPos = -1;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
     public SongsAdapter(SongPlayedListener songPlayedListener) {
         mSongPlayedListener = songPlayedListener;
         mSongs = new ArrayList<>();
@@ -46,24 +45,18 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         this.mSongs = songs;
     }
 
-    // Create new views (invoked by the layout manager)
 
     @Override
     public SongsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
-        // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row, parent, false);
-        // set the view's size, margins, paddings and layout parameters
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         holder.title.setText(mSongs.get(position).getTitle());
         holder.description.setText(mSongs.get(position).getDesc());
         if (mSongs.get(position).getImage() == null) {
@@ -73,32 +66,29 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         }
         holder.duration.setText(mSongs.get(position).getDuration());
 
-        if (position == mSelectedItemPos && !holder.btnpressed) {
-            holder.imageBtn.setImageResource(R.drawable.pause42x42);
+        if (position == mNowPlayingPos) {
+            holder.playimageBtn.setVisibility(View.GONE);
+            holder.pauseImageBtn.setVisibility(View.VISIBLE);
         } else {
-            holder.imageBtn.setImageResource(R.drawable.play42x42);
+            holder.playimageBtn.setVisibility(View.VISIBLE);
+            holder.pauseImageBtn.setVisibility(View.GONE);
         }
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mSongs.size();
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
         public View mView;
 
         TextView description;
         TextView title;
         ImageView image;
         TextView duration;
-        ImageButton imageBtn;
-        boolean btnpressed = false;
+        ImageButton playimageBtn;
+        ImageButton pauseImageBtn;
 
         public ViewHolder(View v) {
             super(v);
@@ -107,34 +97,29 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             title = (TextView) v.findViewById(R.id.title);
             image = (ImageView) v.findViewById(R.id.image);
             duration = (TextView) v.findViewById(R.id.duration);
-            imageBtn = (ImageButton) v.findViewById(R.id.mPlayButton);
+            playimageBtn = (ImageButton) v.findViewById(R.id.play_button);
+            pauseImageBtn = (ImageButton) v.findViewById(R.id.pause_button);
 
-            imageBtn.setOnClickListener(new View.OnClickListener() {
+            pauseImageBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    btnpressed = !btnpressed;
-                    mLastSelectedItemPos = mSelectedItemPos;
-                    mSelectedItemPos = getAdapterPosition();
+                    mNowPlayingPos = -1;
+                    mLastPlayingPos = -1;
+                    mSongPlayedListener.onPauseClicked();
+                    pauseImageBtn.setVisibility(View.GONE);
+                    playimageBtn.setVisibility(View.VISIBLE);
+                }
+            });
 
-                    if (mLastSelectedItemPos != -1) {
-                        notifyItemChanged(mLastSelectedItemPos);
-                    }
-
-                    if (mSelectedItemPos != -1) {
-                        notifyItemChanged(mSelectedItemPos);
-                    }
-                    if (btnpressed == false) {
-                        mSongPlayedListener.onPauseClicked();
-                    }
-
-                    if (btnpressed == true) {
-                        mSongPlayedListener.onPlayClicked(mSongs.get(getAdapterPosition()).songData);
-                    }
-
-                    if (mLastSelectedItemPos == mSelectedItemPos) {
-                        btnpressed = !btnpressed;
-                        notifyItemChanged(getAdapterPosition());
-                    }
+            playimageBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mLastPlayingPos = mNowPlayingPos;
+                    mNowPlayingPos = getAdapterPosition();
+                    notifyItemChanged(mLastPlayingPos);
+                    mSongPlayedListener.onPlayClicked(mSongs.get(getAdapterPosition()).songData);
+                    playimageBtn.setVisibility(View.GONE);
+                    pauseImageBtn.setVisibility(View.VISIBLE);
                 }
             });
         }
