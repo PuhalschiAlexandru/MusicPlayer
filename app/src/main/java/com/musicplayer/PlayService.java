@@ -8,11 +8,13 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class PlayService extends Service {
     private MediaPlayer mMediaPlayer;
     private IBinder mBinder = new LocalBinder();
+    ArrayList<Song> songList = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -47,6 +49,27 @@ public class PlayService extends Service {
 
     public void stopMusic() {
         mMediaPlayer.stop();
+    }
+    public void nextSong(ArrayList<Song> songList,int curentPosition){
+        Song nextSong = songList.get(curentPosition+1);
+        if (mMediaPlayer == null) {
+            mMediaPlayer = new MediaPlayer();
+        }
+        mMediaPlayer.reset();
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mMediaPlayer.setDataSource(nextSong.songData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            mMediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMediaPlayer.start();
+
+
     }
 
 

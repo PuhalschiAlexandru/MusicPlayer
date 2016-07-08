@@ -137,5 +137,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         void onPlayClicked(int songPosition);
 
         void onPauseClicked();
+
+        void onNextClicked(ArrayList<Song> songs,int songPositon);
     }
 }

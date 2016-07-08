@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.provider.MediaStore.Audio;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -63,7 +64,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mRelativeLayout = (RelativeLayout ) findViewById(R.id.bigscreen_layout);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.bigscreen_layout);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new SongsAdapter(this);
@@ -172,27 +173,24 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     }
 
     @Override
-    public void onPlayClicked(int songPosition) {
+    public void onPlayClicked(final int songPosition) {
         ImageView smallImage = (ImageView) findViewById(R.id.small_image);
         TextView smallTitle = (TextView) findViewById(R.id.small_title);
         TextView smallDesc = (TextView) findViewById(R.id.small_desc);
         TextView smallDuration = (TextView) findViewById(R.id.small_duration);
         ImageButton smallPlay = (ImageButton) findViewById(R.id.small_play);
-        ImageButton smallNext = (ImageButton) findViewById(R.id.small_next);
+
         ImageButton smallPrevious = (ImageButton) findViewById(R.id.small_previuous);
 
 
 
-        
-        Song song = mNewList.get(songPosition);
 
+        Song song = mNewList.get(songPosition);
         mService.playMusic(song.songData);
         smallImage.setImageURI(song.imageUri);
         smallTitle.setText(song.title);
         smallDesc.setText(song.desc);
         smallDuration.setText(song.duration);
-
-
 
 
     }
@@ -201,5 +199,17 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     public void onPauseClicked() {
         mService.stopMusic();
     }
+
+    @Override
+    public void onNextClicked(ArrayList<Song> songs, final int songPosition) {
+        ImageButton smallNext = (ImageButton) findViewById(R.id.small_next);
+        smallNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mService.nextSong(mNewList,songPosition);
+            }
+        });
+    }
+
 }
 
