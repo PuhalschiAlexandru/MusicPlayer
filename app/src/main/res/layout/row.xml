@@ -4,79 +4,84 @@
     android:layout_height="wrap_content"
     android:padding="3dp">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:padding="3dp" />
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="50dp"
-        android:layout_toEndOf="@+id/image"
-        android:layout_toRightOf="@+id/image"
-        android:ellipsize="marquee"
-        android:padding="3dp"
-        android:singleLine="true"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/desc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_marginRight="95dp"
-        android:layout_toRightOf="@+id/image"
-        android:ellipsize="marquee"
-        android:padding="3dp"
-        android:singleLine="true"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
     <RelativeLayout
-        android:id="@+id/play_pause_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="5dp">
+        android:id="@+id/bigscreen_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/play_button"
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:padding="3dp" />
+
+        <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:clickable="true"
-            android:src="@drawable/play42x42" />
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="50dp"
+            android:layout_toEndOf="@+id/image"
+            android:layout_toRightOf="@+id/image"
+            android:ellipsize="marquee"
+            android:padding="3dp"
+            android:singleLine="true"
+            android:text="Large Text"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <ImageButton
-            android:id="@+id/pause_button"
+        <TextView
+            android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:clickable="true"
-            android:src="@drawable/pause42x42"
-            android:visibility="gone" />
+            android:layout_below="@+id/title"
+            android:layout_marginRight="95dp"
+            android:layout_toRightOf="@+id/image"
+            android:ellipsize="marquee"
+            android:padding="3dp"
+            android:singleLine="true"
+            android:text="Small Text"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
+        <RelativeLayout
+            android:id="@+id/play_pause_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp">
+
+            <ImageButton
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:clickable="true"
+                android:src="@drawable/play42x42" />
+
+            <ImageButton
+                android:id="@+id/pause_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:clickable="true"
+                android:src="@drawable/pause42x42"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/desc"
+            android:layout_toLeftOf="@+id/play_pause_layout"
+            android:text="Small Text"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
-
-
-    <TextView
-        android:id="@+id/duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/desc"
-        android:layout_toLeftOf="@+id/play_pause_layout"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
 </RelativeLayout>

@@ -43,7 +43,6 @@ public class PlayService extends Service {
             e.printStackTrace();
         }
         mMediaPlayer.start();
-
     }
 
     public void stopMusic() {

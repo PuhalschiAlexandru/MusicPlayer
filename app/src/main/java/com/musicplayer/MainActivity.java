@@ -13,6 +13,12 @@ import android.os.IBinder;
 import android.provider.MediaStore.Audio;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +32,11 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     private static final int LOAD_SONGS_ID = 0;
     private static final int LOAD_ALBUM_ID = 1;
     private RecyclerView mRecyclerView;
+    private RelativeLayout mRelativeLayout;
     private SongsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<NewSong> mSongs;
+    private ArrayList<Song> mNewList = new ArrayList<>();
     private Map<String, String> mAlbumUris;
     PlayService mService;
     boolean mBound;
@@ -55,6 +63,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
+        mRelativeLayout = (RelativeLayout ) findViewById(R.id.bigscreen_layout);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new SongsAdapter(this);
@@ -124,11 +133,12 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             while (iterator.hasNext()) {
                 NewSong val = iterator.next();
                 if (mAlbumUris.containsKey(val.AlbumId)) {
-                    mAdapter.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId), val.songData));
+                    mNewList.add(new Song(val.title, val.desc, val.duration, mAlbumUris.get(val.AlbumId), val.songData));
                 } else {
-                    mAdapter.add(new Song(val.title, val.desc, val.duration, null, val.songData));
+                    mNewList.add(new Song(val.title, val.desc, val.duration, null, val.songData));
                 }
             }
+            mAdapter.addSongs(mNewList);
         }
     }
 
@@ -162,8 +172,29 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     }
 
     @Override
-    public void onPlayClicked(String songUri) {
-        mService.playMusic(songUri);
+    public void onPlayClicked(int songPosition) {
+        ImageView smallImage = (ImageView) findViewById(R.id.small_image);
+        TextView smallTitle = (TextView) findViewById(R.id.small_title);
+        TextView smallDesc = (TextView) findViewById(R.id.small_desc);
+        TextView smallDuration = (TextView) findViewById(R.id.small_duration);
+        ImageButton smallPlay = (ImageButton) findViewById(R.id.small_play);
+        ImageButton smallNext = (ImageButton) findViewById(R.id.small_next);
+        ImageButton smallPrevious = (ImageButton) findViewById(R.id.small_previuous);
+
+
+
+        
+        Song song = mNewList.get(songPosition);
+
+        mService.playMusic(song.songData);
+        smallImage.setImageURI(song.imageUri);
+        smallTitle.setText(song.title);
+        smallDesc.setText(song.desc);
+        smallDuration.setText(song.duration);
+
+
+
+
     }
 
     @Override
