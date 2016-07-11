@@ -17,9 +17,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +40,8 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     private Map<String, String> mAlbumUris;
     PlayService mService;
     boolean mBound;
+    Thread mUpdateSeekBar;
+    private int mCurrentSongPosition = 0;
 
     ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -55,7 +56,6 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             mBound = false;
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,9 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
         mSongs = new ArrayList<>();
         mAlbumUris = new HashMap<>();
+
+        setSmallNextClickListener();
+        setSmallPreviosClickListener();
     }
 
     @Override
@@ -174,39 +177,137 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
 
     @Override
     public void onPlayClicked(final int songPosition) {
+        RelativeLayout bar_layout = (RelativeLayout) findViewById(R.id.bar_layout);
+        bar_layout.setVisibility(View.VISIBLE);
+        mCurrentSongPosition = songPosition;
         ImageView smallImage = (ImageView) findViewById(R.id.small_image);
+        final TextView progresTime = (TextView) findViewById(R.id.progress_time);
         TextView smallTitle = (TextView) findViewById(R.id.small_title);
+        smallTitle.setSelected(true);
         TextView smallDesc = (TextView) findViewById(R.id.small_desc);
+        smallDesc.setSelected(true);
         TextView smallDuration = (TextView) findViewById(R.id.small_duration);
-        ImageButton smallPlay = (ImageButton) findViewById(R.id.small_play);
+        final ImageButton smallPlay = (ImageButton) findViewById(R.id.small_play);
+        final ImageButton smallPause = (ImageButton) findViewById(R.id.small_pause);
+        final SeekBar smallseekBar = (SeekBar) findViewById(R.id.seekBar);
 
-        ImageButton smallPrevious = (ImageButton) findViewById(R.id.small_previuous);
+        smallPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPlayClicked(mCurrentSongPosition);
+                smallPlay.setVisibility(View.INVISIBLE);
+                smallPause.setVisibility(View.VISIBLE);
+                mAdapter.notifyItemChanged(mCurrentSongPosition);
+                mAdapter.setNowPlayingPos(mCurrentSongPosition);
+            }
+        });
 
-
-
-
+        smallPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPauseClicked();
+                smallPause.setVisibility(View.GONE);
+                smallPlay.setVisibility(View.VISIBLE);
+                mAdapter.notifyItemChanged(mCurrentSongPosition);
+                mAdapter.setNowPlayingPos(-1);
+            }
+        });
         Song song = mNewList.get(songPosition);
+        mUpdateSeekBar = new Thread() {
+            @Override
+            public void run() {
+                int totalDuration = mService.getTotalDuration();
+                int curentDurationPosition = 0;
+                smallseekBar.setMax(totalDuration);
+                while (curentDurationPosition < totalDuration) {
+                    curentDurationPosition = mService.getCurentPosition();
+                    smallseekBar.setProgress(curentDurationPosition);
+                }
+            }
+        };
+
         mService.playMusic(song.songData);
-        smallImage.setImageURI(song.imageUri);
+        mUpdateSeekBar.start();
+        smallseekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                progresTime.setText(getDuration(smallseekBar.getProgress()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mService.getSongPosition(smallseekBar.getProgress());
+            }
+        });
+        if (song.imageUri == null) {
+            smallImage.setImageResource(R.drawable.song);
+        } else {
+            smallImage.setImageURI(song.imageUri);
+        }
         smallTitle.setText(song.title);
         smallDesc.setText(song.desc);
         smallDuration.setText(song.duration);
-
-
+        smallPlay.setVisibility(View.INVISIBLE);
+        smallPause.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onPauseClicked() {
+        final ImageButton smallPlay = (ImageButton) findViewById(R.id.small_play);
+        final ImageButton smallPause = (ImageButton) findViewById(R.id.small_pause);
         mService.stopMusic();
+        smallPause.setVisibility(View.GONE);
+        smallPlay.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onNextClicked(ArrayList<Song> songs, final int songPosition) {
+    public void setSmallNextClickListener() {
         ImageButton smallNext = (ImageButton) findViewById(R.id.small_next);
         smallNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mService.nextSong(mNewList,songPosition);
+                int n = mSongs.size();
+                int lastPlayingPos = mCurrentSongPosition;
+                if (mCurrentSongPosition + 1 == n) {
+                    mCurrentSongPosition = -1;
+                }
+                mCurrentSongPosition++;
+
+                mAdapter.setLastPlayingPos(lastPlayingPos);
+                mAdapter.setNowPlayingPos(mCurrentSongPosition);
+                mAdapter.notifyItemChanged(lastPlayingPos);
+                mAdapter.notifyItemChanged(mCurrentSongPosition);
+
+                Song song = mNewList.get(mCurrentSongPosition);
+                mService.playMusic(song.songData);
+                onPlayClicked(mCurrentSongPosition);
+            }
+        });
+    }
+
+    public void setSmallPreviosClickListener() {
+        ImageButton smallPrevious = (ImageButton) findViewById(R.id.small_previuous);
+        smallPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int lastPlayingPos = mCurrentSongPosition;
+                if (mCurrentSongPosition == 0) {
+                    mCurrentSongPosition = mSongs.size();
+                }
+                mCurrentSongPosition--;
+
+                mAdapter.setLastPlayingPos(lastPlayingPos);
+                mAdapter.setNowPlayingPos(mCurrentSongPosition);
+                mAdapter.notifyItemChanged(lastPlayingPos);
+                mAdapter.notifyItemChanged(mCurrentSongPosition);
+
+                Song song = mNewList.get(mCurrentSongPosition);
+                mService.playMusic(song.songData);
+                onPlayClicked(mCurrentSongPosition);
             }
         });
     }

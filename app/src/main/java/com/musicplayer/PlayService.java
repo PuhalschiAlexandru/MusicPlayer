@@ -8,13 +8,12 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class PlayService extends Service {
     private MediaPlayer mMediaPlayer;
     private IBinder mBinder = new LocalBinder();
-    ArrayList<Song> songList = new ArrayList<>();
+    private int totalDuration;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -41,6 +40,7 @@ public class PlayService extends Service {
 
         try {
             mMediaPlayer.prepare();
+            totalDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,32 +50,30 @@ public class PlayService extends Service {
     public void stopMusic() {
         mMediaPlayer.stop();
     }
-    public void nextSong(ArrayList<Song> songList,int curentPosition){
-        Song nextSong = songList.get(curentPosition+1);
-        if (mMediaPlayer == null) {
-            mMediaPlayer = new MediaPlayer();
-        }
-        mMediaPlayer.reset();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mMediaPlayer.setDataSource(nextSong.songData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            mMediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mMediaPlayer.start();
 
-
+    public int getTotalDuration() {
+        return totalDuration;
     }
 
+    public int getCurentPosition() {
+        return mMediaPlayer.getCurrentPosition();
+    }
 
+    public void getSongPosition(int curentPositon) {
+        mMediaPlayer.seekTo(curentPositon);
+    }
+public void onComplet(){
+    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+
+        }
+    });
+}
     public class LocalBinder extends Binder {
         public PlayService getService() {
             return PlayService.this;
         }
     }
+
 }

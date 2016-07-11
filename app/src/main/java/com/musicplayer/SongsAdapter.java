@@ -69,12 +69,18 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         if (position == mNowPlayingPos) {
             holder.playimageBtn.setVisibility(View.GONE);
             holder.pauseImageBtn.setVisibility(View.VISIBLE);
-
-
         } else {
             holder.playimageBtn.setVisibility(View.VISIBLE);
             holder.pauseImageBtn.setVisibility(View.GONE);
         }
+    }
+
+    public void setNowPlayingPos(int nowPlayingPos) {
+        this.mNowPlayingPos = nowPlayingPos;
+    }
+
+    public void setLastPlayingPos(int lastPlayingPos) {
+        this.mLastPlayingPos = lastPlayingPos;
     }
 
     @Override
@@ -92,21 +98,17 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         ImageButton playimageBtn;
         ImageButton pauseImageBtn;
 
-        ImageView smallImage;
-        TextView smallTitle;
-
         public ViewHolder(View v) {
             super(v);
             mView = v;
             description = (TextView) v.findViewById(R.id.desc);
+            description.setSelected(true);
             title = (TextView) v.findViewById(R.id.title);
+            title.setSelected(true);
             image = (ImageView) v.findViewById(R.id.image);
             duration = (TextView) v.findViewById(R.id.duration);
             playimageBtn = (ImageButton) v.findViewById(R.id.play_button);
             pauseImageBtn = (ImageButton) v.findViewById(R.id.pause_button);
-
-
-
 
             pauseImageBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,7 +139,5 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         void onPlayClicked(int songPosition);
 
         void onPauseClicked();
-
-        void onNextClicked(ArrayList<Song> songs,int songPositon);
     }
 }
