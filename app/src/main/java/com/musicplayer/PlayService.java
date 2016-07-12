@@ -9,7 +9,6 @@ import android.os.IBinder;
 
 import java.io.IOException;
 
-
 public class PlayService extends Service {
     private MediaPlayer mMediaPlayer;
     private IBinder mBinder = new LocalBinder();
@@ -45,6 +44,7 @@ public class PlayService extends Service {
             e.printStackTrace();
         }
         mMediaPlayer.start();
+
     }
 
     public void stopMusic() {
@@ -62,14 +62,11 @@ public class PlayService extends Service {
     public void getSongPosition(int curentPositon) {
         mMediaPlayer.seekTo(curentPositon);
     }
-public void onComplet(){
-    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mediaPlayer) {
 
-        }
-    });
-}
+    public void resetSoungPosition() {
+        mMediaPlayer.seekTo(0);
+    }
+
     public class LocalBinder extends Binder {
         public PlayService getService() {
             return PlayService.this;

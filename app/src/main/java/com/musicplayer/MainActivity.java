@@ -219,7 +219,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
                 int totalDuration = mService.getTotalDuration();
                 int curentDurationPosition = 0;
                 smallseekBar.setMax(totalDuration);
-                while (curentDurationPosition < totalDuration) {
+                while (curentDurationPosition <= totalDuration) {
                     curentDurationPosition = mService.getCurentPosition();
                     smallseekBar.setProgress(curentDurationPosition);
                 }
@@ -232,16 +232,22 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progresTime.setText(getDuration(smallseekBar.getProgress()));
+                int totalDuration = mService.getTotalDuration();
+                if(smallseekBar.getProgress()>=totalDuration-200){
+                    mService.resetSoungPosition();
+                    smallseekBar.setProgress(0);
+                    playNextSong();
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mService.getSongPosition(smallseekBar.getProgress());
+
             }
         });
         if (song.imageUri == null) {
@@ -270,21 +276,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         smallNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int n = mSongs.size();
-                int lastPlayingPos = mCurrentSongPosition;
-                if (mCurrentSongPosition + 1 == n) {
-                    mCurrentSongPosition = -1;
-                }
-                mCurrentSongPosition++;
-
-                mAdapter.setLastPlayingPos(lastPlayingPos);
-                mAdapter.setNowPlayingPos(mCurrentSongPosition);
-                mAdapter.notifyItemChanged(lastPlayingPos);
-                mAdapter.notifyItemChanged(mCurrentSongPosition);
-
-                Song song = mNewList.get(mCurrentSongPosition);
-                mService.playMusic(song.songData);
-                onPlayClicked(mCurrentSongPosition);
+                playNextSong();
             }
         });
     }
@@ -294,22 +286,43 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         smallPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int lastPlayingPos = mCurrentSongPosition;
-                if (mCurrentSongPosition == 0) {
-                    mCurrentSongPosition = mSongs.size();
-                }
-                mCurrentSongPosition--;
-
-                mAdapter.setLastPlayingPos(lastPlayingPos);
-                mAdapter.setNowPlayingPos(mCurrentSongPosition);
-                mAdapter.notifyItemChanged(lastPlayingPos);
-                mAdapter.notifyItemChanged(mCurrentSongPosition);
-
-                Song song = mNewList.get(mCurrentSongPosition);
-                mService.playMusic(song.songData);
-                onPlayClicked(mCurrentSongPosition);
+                playPreviousSong();
             }
         });
+    }
+    private void playPreviousSong(){
+        int lastPlayingPos = mCurrentSongPosition;
+        if (mCurrentSongPosition == 0) {
+            mCurrentSongPosition = mSongs.size();
+        }
+        mCurrentSongPosition--;
+
+        mAdapter.setLastPlayingPos(lastPlayingPos);
+        mAdapter.setNowPlayingPos(mCurrentSongPosition);
+        mAdapter.notifyItemChanged(lastPlayingPos);
+        mAdapter.notifyItemChanged(mCurrentSongPosition);
+
+        Song song = mNewList.get(mCurrentSongPosition);
+        mService.playMusic(song.songData);
+        onPlayClicked(mCurrentSongPosition);
+    }
+
+    private void playNextSong(){
+        int n = mSongs.size();
+        int lastPlayingPos = mCurrentSongPosition;
+        if (mCurrentSongPosition + 1 == n) {
+            mCurrentSongPosition = -1;
+        }
+        mCurrentSongPosition++;
+
+        mAdapter.setLastPlayingPos(lastPlayingPos);
+        mAdapter.setNowPlayingPos(mCurrentSongPosition);
+        mAdapter.notifyItemChanged(lastPlayingPos);
+        mAdapter.notifyItemChanged(mCurrentSongPosition);
+
+        Song song = mNewList.get(mCurrentSongPosition);
+        mService.playMusic(song.songData);
+        onPlayClicked(mCurrentSongPosition);
     }
 
 }
