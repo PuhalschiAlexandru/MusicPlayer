@@ -166,13 +166,14 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
     protected void onStart() {
         super.onStart();
         Intent i = new Intent(this, PlayService.class);
+        startService(i);
         bindService(i, mConnection, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
+        unbindService(mConnection);
     }
 
     @Override
@@ -180,6 +181,9 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         RelativeLayout bar_layout = (RelativeLayout) findViewById(R.id.bar_layout);
         bar_layout.setVisibility(View.VISIBLE);
         mCurrentSongPosition = songPosition;
+        mService.setSongs(mNewList);
+        mService.setCurentPosition(mCurrentSongPosition);
+
         ImageView smallImage = (ImageView) findViewById(R.id.small_image);
         final TextView progresTime = (TextView) findViewById(R.id.progress_time);
         TextView smallTitle = (TextView) findViewById(R.id.small_title);
@@ -226,14 +230,14 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             }
         };
 
-        mService.playMusic(song.songData);
+        mService.playMusic();
         mUpdateSeekBar.start();
         smallseekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progresTime.setText(getDuration(smallseekBar.getProgress()));
                 int totalDuration = mService.getTotalDuration();
-                if(smallseekBar.getProgress()>=totalDuration-200){
+                if (smallseekBar.getProgress() >= totalDuration - 200) {
                     mService.resetSoungPosition();
                     smallseekBar.setProgress(0);
                     playNextSong();
@@ -290,40 +294,42 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             }
         });
     }
-    private void playPreviousSong(){
+
+    private void playPreviousSong() {
         int lastPlayingPos = mCurrentSongPosition;
         if (mCurrentSongPosition == 0) {
             mCurrentSongPosition = mSongs.size();
         }
         mCurrentSongPosition--;
+        mService.setCurentPosition(mCurrentSongPosition);
 
         mAdapter.setLastPlayingPos(lastPlayingPos);
         mAdapter.setNowPlayingPos(mCurrentSongPosition);
         mAdapter.notifyItemChanged(lastPlayingPos);
         mAdapter.notifyItemChanged(mCurrentSongPosition);
 
-        Song song = mNewList.get(mCurrentSongPosition);
-        mService.playMusic(song.songData);
+        mService.playMusic();
         onPlayClicked(mCurrentSongPosition);
     }
 
-    private void playNextSong(){
+    private void playNextSong() {
         int n = mSongs.size();
         int lastPlayingPos = mCurrentSongPosition;
         if (mCurrentSongPosition + 1 == n) {
             mCurrentSongPosition = -1;
         }
         mCurrentSongPosition++;
+        mService.setCurentPosition(mCurrentSongPosition);
 
         mAdapter.setLastPlayingPos(lastPlayingPos);
         mAdapter.setNowPlayingPos(mCurrentSongPosition);
         mAdapter.notifyItemChanged(lastPlayingPos);
         mAdapter.notifyItemChanged(mCurrentSongPosition);
 
-        Song song = mNewList.get(mCurrentSongPosition);
-        mService.playMusic(song.songData);
+        mService.playMusic();
         onPlayClicked(mCurrentSongPosition);
     }
+
 
 }
 
